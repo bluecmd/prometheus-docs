@@ -2,7 +2,7 @@
 title: Monitoring Dreamhack - the World's Largest Digital Festival
 created_at: 2015-06-20
 kind: article
-author_name: Christian Svensson
+author_name: Christian Svensson (Dreamhack Network Team)
 ---
 
 *Disclaimer: This article is a guest post written by a Prometheus user*
@@ -20,18 +20,18 @@ The team that builds and operates everything related to the network is officiall
 ## The Equipment
 Turns out that to build a highly performant network for 10 000+ computers you need at least the same number of network ports. In our case these comes in the form of ~400 Cisco 2950 switches. We call these the Access switches. These are everywhere in venue where participants will be seated with their computers.
 
-{{IMAGE}}
-*Dutifully standing in line, the Access switches are ready to greet the Dreamhackers with high-speed connectivity.*
+[![Access switches](https://c1.staticflickr.com/9/8487/8206439882_4739d39a9c_c.jpg)](https://www.flickr.com/photos/dreamhack/8206439882)
+<center>*Dutifully standing in line, the Access switches are ready to greet the Dreamhackers with high-speed connectivity.*</center>
 
 Obviously just connecting all these computers to a switch is not enough, that switch needs to be connected to the other switches as well. This is where the Distribution switches (or Dist switches) come into play. These are switches that take the hundreds of links from all access switches and aggregates them into more manageable 10 Gbit high-capacity fibre. The dist switches are then further aggregated into our Core where the traffic is routed to its destination. 
 
 On top of all of this that we operate our own WiFi networks, DNS/DHCP servers and other infrastructure. When completed our Core looks something like below.
 
-{{IMAGE}}
-*The Dreamhack Network Core*
+[![The Dreamhack Network Core](https://c2.staticflickr.com/4/3951/18679671439_10ce7a8eb4_c.jpg)](https://www.flickr.com/photos/dreamhack/18679671439)
+<center>*The Dreamhack Network Core*</center>
 
-{{IMAGE}}
-*The planning map for the Distribution and Core layers. The Core is clearly visible in "Hall D"*
+[![Network Planing Map](http://i.imgur.com/ZCQa2Abl.png)](http://i.imgur.com/ZCQa2Ab.png)
+<center>*The planning map for the Distribution and Core layers. The Core is clearly visible in "Hall D"*</center>
 
 All in all this is becoming a lengthy list of stuff to monitor, so let's get to the reason you're here: How do we make sure we know what's going on?
 
@@ -47,8 +47,8 @@ At the time the options were limited. Over the years the system went from using 
 ## The Architecture
 The monitoring solution consists of three layers: collection, storage, presentation. Our most critical collectors are snmpcollector (SNMP) and ipplan-pinger (ICMP), closely followed by dhcpinfo (DHCP lease stats). We also have some scripts that dump stats about other systems into node_exporter's textfile collector.
 
-{{IMAGE}}
-*The current architecture plan of dhmon as of Summer 2015*
+[![dhmon Architecture](http://i.imgur.com/6gN3MRp.png)](http://i.imgur.com/6gN3MRp.png)
+<center>*The current architecture plan of dhmon as of Summer 2015*</center>
 
 As for storage we use Prometheus as a central timeseries storage and querying engine but we also use Redis and memcache to export snapshot views of binary information that we collect but cannot store in Prometheus in any sensible way or when we need to access very fresh data.
 
@@ -56,8 +56,8 @@ One such case is in our presentation layer. We use our dhmap web application to 
 
 We continued to use memcache this event as well for our low-latency data while using Prometheus for everything that's historical or not as latency sensitive. This decision was made simply because we were unsure how Prometheus would perform. In the end we found no reason for why we can't use Prometheus for this data as well - we will definitely try to replace our memcache with Prometheus next Dreamhack.
 
-{{IMAGE}}
-*The overview of our access layer visualized by dhmon*
+[![dhmon Visualization](http://i.imgur.com/D5I0Ztbl.png)](http://i.imgur.com/D5I0Ztb.png)
+<center>*The overview of our access layer visualized by dhmon*</center>
 
 ## Prometheus Setup
 The block that so far has been referred to as Prometheus really consists of three products: Prometheus, PromDash and Alertmanager. The setup is fairly basic and all three softwares are running on the same host. Everything is served by an Apache web server that just acts as a reverse proxy.
@@ -98,8 +98,8 @@ Let's also look at how an alert for an almost full DHCP scope looks like:
 
 We found the syntax to define alerts easy to read and understand even if you had no previous experience with Prometheus or time series databases. 
 
-{{IMAGE}}
-*Oops! Turns out we have some bad uplinks, better run out and fix it!*
+[![Prometheus Alerts on Dreamhack](http://i.imgur.com/RV5gM7Ol.png)](http://i.imgur.com/RV5gM7O.png)
+<center>*Oops! Turns out we have some bad uplinks, better run out and fix it!*</center>
 
 ## Being Proactive: Dashboards
 While alerting is essential part of monitoring sometimes you just want to have a good overview of the health of your network. To achieve this we used PromDash. Every time someone asked us something about the network and we crafted a query to get the answer to that we saved it as a dashboard widget. The most interesting ones were then added to an overview dashboard that we proudly displayed.
@@ -120,6 +120,3 @@ We're really excited about Prometheus and how easy it makes setting up scalable 
 A huge shout-out to everyone that helped us in #prometheus during the event. Special thanks to Brian Brazil, Fabian Reinartz and Julius Volz. Thanks for helping us even in the cases where it was obvious that we hadn't read the documentation thoroughly enough.
 
 Finally, dhmon is all open-source so head over to https://github.com/dhtech/ and have a look if you're interested. If you feel like you would like to be a part of this, just head over to #dreamhack at QuakeNet and have a chat with us. Who knows, maybe you will help us build the next Dreamhack?
-
-Christian "blueCmd" Svensson
-For Dreamhack Network Team
